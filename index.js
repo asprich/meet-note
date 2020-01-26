@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Vuetify from "vuetify";
+import colors from "vuetify/lib/util/colors";
 
 import Authentication from "./app/helpers/Authentication";
 
@@ -18,9 +19,19 @@ Authentication.whenUserIsLoggedIn(user => {
     //Starting Vue
     global.MeetingNotesApp = new Vue({ 
         render: createElement => createElement(MeetNoteApp),
-        vuetify: new Vuetify(),
         router,
-        store
+        store,
+        vuetify: new Vuetify({
+            theme: {
+              themes: {
+                light: {
+                  primary: colors.red.darken1, // #E53935
+                  secondary: colors.red.lighten4, // #FFCDD2
+                  accent: colors.indigo.base, // #3F51B5
+                },
+              },
+            },
+          })
     }).$mount("#app");
     
     store.commit("setUser", user);

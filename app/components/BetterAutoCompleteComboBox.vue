@@ -5,10 +5,10 @@
         multiple 
         chips 
         autocomplete
+        :disabled="disabled"
         :items="filteredAutoCompleteItems"
         deletable-chips
-        :search-input.sync="seachInput" 
-        @change="seachInput = ''" 
+        @change="updateData" 
         @keydown="keyd"></v-combobox>
 </template>
 
@@ -43,10 +43,9 @@
  *******************************************************/
 export default {
     name: "TextBoxList",
-    props: ["value","label","autocompleteItems"],
+    props: ["value","label","autocompleteItems","disabled"],
     data: () => ({
-        selectedItems: [],
-        seachInput: null
+        selectedItems: []
     }),
     computed: {
         filteredAutoCompleteItems() {

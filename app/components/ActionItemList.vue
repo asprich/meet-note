@@ -1,3 +1,8 @@
+<style>
+.match-combo-box input[type='text'] { padding: 21px 0; }
+.match-combo-box .v-input__prepend-outer { top: 5px; position: relative; }
+</style>
+
 <template>
     <div class="d-flex flex-column">
         <v-flex py-4 style="position:relative">
@@ -7,17 +12,20 @@
             </v-btn>
         </v-flex>
 
-        <v-flex v-for="item in items" :key="item.__key" class="pl-2">
+        <v-flex v-for="item in items" :key="item.key" class="pl-2">
             <v-row>
-                <v-col sm="2">
-                    <v-text-field v-model="item.assignee" @blur="updateData()" label="Assignee" prepend-icon="mdi-record"></v-text-field>
+                <v-col sm="1">
+                    <v-checkbox v-model="item.hasBeenCompleted" @input="updateData()"></v-checkbox>
                 </v-col>
-                <v-col>
-                    <v-text-field v-model="item.action" @blur="updateData()" label="Action"></v-text-field>
+                <v-col sm="4">
+                    <better-combobox v-model="item.assignee" label="Assigned To" :disabled="item.hasBeenCompleted" :autocomplete-items="people" @input="updateData()"></better-combobox>
                 </v-col>
-                <v-col sm="3">
-                    <time-stamp-date-picker v-model="item.dueDate" label="Due Date" @input="updateData()">
-                        <v-icon slot="append-outer" color="red" @click="remove(item)">mdi-minus</v-icon>
+                <v-col class="match-combo-box">
+                    <v-text-field v-model="item.action" @blur="updateData()" :disabled="item.hasBeenCompleted" label="Action"></v-text-field>
+                </v-col>
+                <v-col sm="2" class="match-combo-box">
+                    <time-stamp-date-picker v-model="item.dueDate" label="Due Date" :disabled="item.hasBeenCompleted" @input="updateData()">
+                        <v-icon slot="append-outer" color="red" @click="remove(item)" v-if="!item.hasBeenCompleted">mdi-minus</v-icon>
                     </time-stamp-date-picker>
                 </v-col>
             </v-row>
@@ -29,18 +37,17 @@
 import TimeStampDatePicker from "./TimeStampDatePicker";
 import MeetingNoteFactory from "../helpers/MeetingNoteFactory";
 import KeyGenerator from "../helpers/KeyGenerator";
+import BetterCombobox from "./BetterAutoCompleteComboBox";
 
 export default {
     name:"ActionItemList",
     props: ["value","label"],
-    components: {TimeStampDatePicker},
-    data()  {
-        return {
-            items: []
-        }
-    },
-    mounted() {
-        this.items = this.valueToItems(this.value);
+    components: {TimeStampDatePicker,BetterCombobox},
+    data: () => ({
+        items: []
+    }),
+    computed: {
+        people() { return this.$store.getters.people }
     },
     watch: {
         value(newItems) { this.items = this.valueToItems(newItems); }
@@ -53,7 +60,7 @@ export default {
         remove(item) {
             console.log(item);
             for(var i=0;i<this.items.length;i++) {
-                if (this.items[i].__key !== item.__key)
+                if (this.items[i].key !== item.key)
                     continue;
                 
                 this.items.splice(i, 1);
@@ -70,6 +77,9 @@ export default {
             this.$emit('input', this.items);
         },
         
+    },
+    mounted() {
+        this.items = this.valueToItems(this.value);
     }
 };
 </script>

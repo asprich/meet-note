@@ -17,8 +17,10 @@ export default {
     name:"Navigation",
     data:() =>({
         links: [
-            { icon:"mdi-home", text:"Home", route:"/"},
-            { icon:"mdi-plus-circle-outline", text:"new", route:{name:"new"}}
+            { icon:"mdi-home", text:"Dashboard", route:"/"},
+            { icon:"mdi-plus-circle-outline", text:"New", route:{name:"new"}},
+            { icon:"mdi-marker-check", text:"Action Items", route:{name:"action-items"}},
+            { icon:"mdi-thumb-up", text:"Decisions", route:{name:"decisions"}}
         ]
     })
 }

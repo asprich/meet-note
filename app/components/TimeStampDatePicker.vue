@@ -2,7 +2,7 @@
     <v-menu ref="menu" v-model="menu" :close-on-content-click="false" :nudge-right="40"
     transition="scale-transition" offset-y min-width="290px">
         <template v-slot:activator="{ on }">
-            <v-text-field v-model="selectedDate" :label="label" prepend-icon="mdi-calendar-month" readonly v-on="on" @input="updateData()">
+            <v-text-field v-model="selectedDate" :label="label" prepend-icon="mdi-calendar-month" readonly v-on="on" :disabled="disabled">
                 <slot name="append-outer" slot="append-outer"></slot>
             </v-text-field>
         </template>
@@ -18,29 +18,36 @@ export default {
     name:"TimeStampDatePicker",
     props: {
         value: Object,
-        label: String
+        label: String,
+        disabled: Boolean
     },
-    data: function()  {
+    data() {
         return {
             selectedDate: this.getDateFromTimeStamp(this.value),
             menu: false
+        };
+    },
+    watch: {
+        selectedDate() {
+            this.$emit('input', this.getTimeStampFromDate(this.selectedDate));
         }
     },
     methods: {
-        updateData: function() {
-            this.$emit('input', this.getTimeStampFromDate(this.selectedDate));
-        },
         getTimeStampFromDate: function(date) {
             if (typeof(date) === "string")
                 date = new Date(Date.parse(date));
             var d = date || new Date();
-            return firebase.firestore.Timestamp.fromDate(d);
+            var ts = firebase.firestore.Timestamp.fromDate(d);
+            console.log([d,ts]);
+            return ts;
         },
         getDateFromTimeStamp: function(timestamp) { 
             var d = timestamp && timestamp.toDate
                 ? timestamp.toDate() 
                 : new Date();
-            return d.toISOString().substr(0, 10);
+            var dString = d.toISOString().substr(0, 10);
+            console.log([d, dString]);
+            return dString;
         }
     }
 };

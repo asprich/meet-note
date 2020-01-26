@@ -4,7 +4,7 @@
         <v-card-title>Meeting Notes</v-card-title>
         <v-form>
             <v-text-field v-model="model.title" label="Title"></v-text-field>
-            <better-combobox ref="people" v-model="model.attendees" label="Attendees" :autocomplete-items="people"></better-combobox>
+            <better-combobox v-model="model.attendees" label="Attendees" :autocomplete-items="people"></better-combobox>
             <better-combobox v-model="model.tags" label="Tags" :autocomplete-items="tags"></better-combobox>
             <text-box-list v-model="model.agenda" label="Agenda"></text-box-list>
             <rich-text-editor v-model="model.notes" label="Notes"></rich-text-editor>
@@ -23,8 +23,6 @@
 import TextBoxList from "../components/TextBoxList";
 import ActionItemList from "../components/ActionItemList";
 import RichTextEditor from "../components/RichTextEditor";
-import MeetingNoteFactory from "../helpers/MeetingNoteFactory";
-import MeetingNoteRepository from "../db/MeetingNoteRepository";
 import BetterCombobox from "../components/BetterAutoCompleteComboBox";
 
 export default {
@@ -44,21 +42,18 @@ export default {
     methods: {
         save() {
             this.waiting = true;
-            this._meetingNoteRepository.save(this.model, () => {
-                this.waiting = false;
-                this.successMessage = true;
-            });
+            this.$store
+                .dispatch("save.meet-note", this.model)
+                .then(i => {
+                    this.waiting = false;
+                    this.successMessage = true;
+                });
         }
     },
-    created() {
-        this._meetingNoteRepository = new MeetingNoteRepository();
-    },
     mounted() {
-        this.model = MeetingNoteFactory.createMeetingNote();
-        
-        var meetingId = this.$route.params.meetingId;
-        if (meetingId)
-            this._meetingNoteRepository.get(meetingId, i => this.model = i);
+        this.$store
+            .dispatch("get.meet-note", this.$route.params.meetingId)
+            .then(i => this.model = i);
     }
 };
 </script>

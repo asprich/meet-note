@@ -1,12 +1,15 @@
 <template>
-    <v-data-table class="elevation-1 stretch" 
+    <v-data-table class="elevation-1" 
         :items="actionItems" item-key="__key" :headers="headers">
             <template v-slot:item="{ item }">
                 <tr>
-                    <td><v-checkbox v-model="item.hasBeenCompleted" color="green"></v-checkbox></td>
-                    <td>{{item.assignee}}</td>
+                    <td><v-checkbox v-model="item.hasBeenCompleted" color="green" @change="updateAction(item)"></v-checkbox></td>
+                    <td><v-chip v-for="assignee in item.assignee" :key="assignee" dark class="mr-2">{{ assignee }}</v-chip></td>
                     <td><div :class="{strikethrough: item.hasBeenCompleted}">{{item.action}}</div></td>
-                    <td>{{item.dueDate.toDate().toDateString().replace(' 2020',', 2020')}}</td>
+                    <td>
+                        <div v-if="!item.hasBeenCompleted">{{item.dueDate.toDate().toDateString().replace(' 2020',', 2020')}}</div>
+                        <div v-if="item.hasBeenCompleted">Completed On: {{item.completedDate.toDate().toDateString().replace(' 2020',', 2020')}}</div>
+                    </td>
                     <td>
                         <v-btn :to="{ name:'view', params:{ meetingId: item.meetingId }}" icon><v-icon>mdi-eye-outline</v-icon></v-btn>
                         <v-btn :to="{ name:'edit', params:{ meetingId: item.meetingId }}" icon><v-icon>mdi-pencil</v-icon></v-btn>
@@ -31,6 +34,12 @@ export default {
     computed: {
         actionItems() {
             return this.$store.getters.actionItems;
+        }
+    },
+    methods: {
+        updateAction(actionItem) {
+            this.$store.dispatch("complete.meet-note-action-item", actionItem)
+                .then(console.log);
         }
     }
 }

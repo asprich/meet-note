@@ -1,56 +1,35 @@
 import Vue from "vue";
 import Vuex from "vuex";
 
-import { vuexfireMutations, firestoreAction } from "vuexfire";
-import fb from "../helpers/Firebase";
+import UserStore from "./UserStore";
+import MeetingNotesStore from "./MeetingNotesStore";
+import ActionItemsStore from "./ActionItemsStore";
+import DecisionsStore from "./DecisionsStore";
 
-const db = fb.firestore;
+import { vuexfireMutations } from "vuexfire";
 
 Vue.use(Vuex);
 
 var store = new Vuex.Store({
     state: {
-        latestMeetingNotes: [],
-        autoCompleteLists: [],
-        actionItems: [],
-        user: {}
+        ...UserStore.state,
+        ...MeetingNotesStore.state,
+        ...ActionItemsStore.state,
+        ...DecisionsStore.state
     },
     getters: {
-        tags: state => {
-            return (state.autoCompleteLists.length > 1 && state.autoCompleteLists[1].tags)
-                ? state.autoCompleteLists[1].tags
-                : [];
-        },
-        people: state => {
-            return (state.autoCompleteLists.length > 0 && state.autoCompleteLists[1].tags)
-                ? state.autoCompleteLists[0].people
-                : [];
-        },
-        actionItems: state => {
-            return [].concat.apply([],state.actionItems.map(i => i.actionItems.map((m,x) =>{
-                m.meetingId = i.id;
-                m.__key = m.meetingId+"-"+x;
-                m.hasBeenCompleted = false;
-                return m;
-            })));
-        }
+        ...MeetingNotesStore.getters,
+        ...ActionItemsStore.getters,
+        ...DecisionsStore.getters
     },
     mutations: {
-        setUser(state, user) {
-            state.user = user;
-        },
+        ...UserStore.mutations,
         ...vuexfireMutations
     },
-
     actions: {
-        "watch.meet-note": firestoreAction(context => 
-            context.bindFirestoreRef("latestMeetingNotes", db.collection("meet-note").orderBy("date","desc"))),
-        
-        "watch.auto-complete-lists": firestoreAction(context => 
-            context.bindFirestoreRef("autoCompleteLists", db.collection("auto-complete-lists"))),
-        
-        "watch.meet-note-action-items": firestoreAction(context => 
-            context.bindFirestoreRef("actionItems", db.collection("meet-note-action-items")))
+        ...MeetingNotesStore.actions,
+        ...ActionItemsStore.actions,
+        ...DecisionsStore.actions
     }
 })
 
@@ -58,5 +37,6 @@ var store = new Vuex.Store({
 store.dispatch("watch.meet-note");
 store.dispatch("watch.auto-complete-lists");
 store.dispatch("watch.meet-note-action-items");
+store.dispatch("watch.meet-note-details");
 
 export default store;
