@@ -63,3 +63,9 @@ node_modules/
 
 # dotenv environment variables file
 .env
+
+# Parcel cache direcotry
+.cache/
+
+# Production Builds
+dist/
