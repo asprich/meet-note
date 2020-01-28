@@ -39,8 +39,6 @@ export default {
     }),
     computed: {
         latestMeetingNotes() { return this.$store.state.latestMeetingNotes; }
-    },
-    created() {
     }
 }
 </script>

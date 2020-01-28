@@ -48,6 +48,7 @@ export default {
                     m.attendees = nd.attendees;
                     m.tags = nd.tags;
                 }
+
                 if (values[1].exists) {
                     var dd = values[1].data();
                     m.id = meetingId;
@@ -55,6 +56,7 @@ export default {
                     m.notes = dd.notes;
                     m.decisions = dd.decisions;
                 }
+                
                 if (values[2].exists) {
                     var ad = values[2].data();
                     m.id = meetingId;

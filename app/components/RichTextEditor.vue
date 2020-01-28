@@ -14,12 +14,13 @@ import "quill/dist/quill.snow.css";
 export default {
     name: "RichTextEditor",
     props: ["value","label"],
-    data() {
-        return {
-            quillId: "editor_" + Math.floor(Math.random()*100000000),
-            content: "",
-            quill: null
-        };
+    data: () => ({
+        quillId: "editor_" + Math.floor(Math.random()*100000000),
+        content: "",
+        quill: null
+    }),
+    watch: {
+        value(newValue) { this.quill.root.innerHTML = this.value }
     },
     mounted() {
         this.content = this.value;
@@ -40,9 +41,6 @@ export default {
         this.quill.root.innerHTML = this.content;
 
         this.quill.root.addEventListener("blur", () => this.$emit('input', this.content = this.quill.root.innerHTML));
-    },
-    watch: {
-        value(newValue) { this.quill.root.innerHTML = this.value }
     }
 }
 </script>
