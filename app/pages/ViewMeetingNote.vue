@@ -71,3 +71,11 @@ export default {
     }
 };
 </script>
+
+<style>
+    .ql-indent-1 { margin-left: 30px; }
+    .ql-indent-2 { margin-left: 60px; }
+    .ql-indent-3 { margin-left: 90px; }
+    .ql-indent-4 { margin-left: 120px; }
+    .ql-indent-5 { margin-left: 150px; }
+</style>

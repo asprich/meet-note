@@ -5,7 +5,6 @@ export default {
     whenUserIsLoggedIn(cb) {
         const callback = cb||function(){};
 
-
         //Listen for login status changed. 
         fb.firebase.auth().onAuthStateChanged(function(user) {
             //If logged in, user will not be null
